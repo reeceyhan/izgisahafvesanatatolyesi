@@ -909,20 +909,21 @@ async function saveProd(){
 
 boot();
 
-<button onclick="testFirestore()">TEST EKLE</button>
-
 </script>
 
 <script type="module">
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { 
-  getFirestore, 
-  collection, 
-  addDoc, 
-  getDocs 
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
+import {
+  getFirestore,
+  collection,
+  addDoc,
+  getDocs,
+  doc,
+  setDoc,
+  getDoc
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyAbI_gr9pN6tHk7YFpzvU6C3AuqkTZawiM",
@@ -934,36 +935,50 @@ const firebaseConfig = {
   measurementId: "G-CHJDBK1C2S"
 };
 
-
 const app = initializeApp(firebaseConfig);
-
 const db = getFirestore(app);
-
 
 window.db = db;
 window.collection = collection;
 window.addDoc = addDoc;
 window.getDocs = getDocs;
 
-<script>
-  async function testFirestore() {
-    try {
-      await window.addDoc(
-        window.collection(window.db, "inventory"),
-        {
-          ad: "Test Ürün",
-          fiyat: 100,
-          ts: Date.now()
-        }
-      );
+window.storageGet = async function(){
+  try {
+    const ref = doc(db, "appData", "books");
+    const snap = await getDoc(ref);
 
-      alert("✅ Firestore'a yazdı");
-    } catch(e) {
-      console.error(e);
-      alert("❌ hata");
+    if (snap.exists()) {
+      return snap.data().list || [];
     }
-  }
-</script>
 
+    return [];
+  } catch (e) {
+    console.error("Firestore GET hata:", e);
+    return [];
+  }
+};
+
+window.storageSet = async function(data){
+  try {
+    const ref = doc(db, "appData", "books");
+
+    await setDoc(ref, {
+      list: data,
+      updatedAt: Date.now()
+    });
+
+    return true;
+  } catch (e) {
+    console.error("Firestore SET hata:", e);
+    return false;
+  }
+};
+
+if (typeof loadBooks === "function") {
+  loadBooks();
+}
+
+</script>
 </body>
 </html>
