@@ -943,6 +943,25 @@ window.collection = collection;
 window.addDoc = addDoc;
 window.getDocs = getDocs;
 
+<script>
+  async function testFirestore() {
+    try {
+      await window.addDoc(
+        window.collection(window.db, "inventory"),
+        {
+          ad: "Test Ürün",
+          fiyat: 100,
+          ts: Date.now()
+        }
+      );
+
+      alert("✅ Firestore'a yazdı");
+    } catch(e) {
+      console.error(e);
+      alert("❌ hata");
+    }
+  }
 </script>
+
 </body>
 </html>
