@@ -888,26 +888,39 @@ function renderPhotoPreview2(){
 }
 function rmPhoto2(idx){pendingPhotos2.splice(idx,1);renderPhotoPreview2();}
 async function saveProd(){
-  var kat=gv('p_kat')||'plak';
-  var prod={
-    id:genId(),ts:Date.now(),
-    kategori:kat,
-    ad:gv('p_ad'),yazar:gv('p_yazar'),yayinevi:'',yil:gv('p_yil'),
-    tur:gv('p_tur'),tur_custom:'',durum:gv('p_durum'),
-    konum:gv('p_konum'),adet:gv('p_adet'),fiyat:gv('p_fiyat'),
-    satildi:parseInt(gv('p_sat'))||0,not:gv('p_not'),
-    photos:pendingPhotos2.slice()
-  };
-  books.unshift(prod);
-  var ok=await saveBooks();
-  if(ok){
-    closeProdModal();updateStats();
-    setHpTab(kat);
-    showNotif('Ürün eklendi.','success');
-  } else showNotif('Kayıt başarısız.','error');
-}
 
-boot();
+  var kat = gv('p_kat') || 'plak';
+
+  var prod = {
+    kategori: kat,
+    ad: gv('p_ad'),
+    yazar: gv('p_yazar'),
+    yil: gv('p_yil'),
+    tur: gv('p_tur'),
+    durum: gv('p_durum'),
+    konum: gv('p_konum'),
+    adet: gv('p_adet'),
+    fiyat: gv('p_fiyat'),
+    satildi: parseInt(gv('p_sat')) || 0,
+    not: gv('p_not'),
+    photos: pendingPhotos2.slice(),
+    ts: Date.now()
+  };
+
+  try {
+    await fb.addDoc(
+      fb.collection(db, "inventory"),
+      prod
+    );
+
+    closeProdModal();
+    showNotif("✅ Firestore'a kaydedildi", "success");
+
+  } catch (e) {
+    console.error(e);
+    showNotif("❌ Firestore kayıt hatası", "error");
+  }
+}
 
 </script>
 
