@@ -843,14 +843,6 @@ async function saveProd(){
   };
   books.unshift(prod);
   var ok=await saveBooks();
-
-try {
-    await window.addDoc(window.collection(window.firebaseDB, "books"), prod);
-    console.log("Firebase kayıt başarılı");
-} catch (e) {
-    console.error('Firebase kayıt hatası:' e)
-}
-
   if(ok){
     closeProdModal();updateStats();
     setHpTab(kat);
@@ -861,16 +853,20 @@ try {
 boot();
 
 </script>
-
 <script type="module">
+
+// Firebase modülleri
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 
 import {
   getFirestore,
   collection,
-  addDoc
+  addDoc,
+  getDocs
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
+
+// Firebase ayarların
 const firebaseConfig = {
   apiKey: "AIzaSyAbI_gr9pN6tHk7YFpzvU6C3AuqkTZawiM",
   authDomain: "izgisahafvesanatatolyesi-3ffde.firebaseapp.com",
@@ -881,12 +877,21 @@ const firebaseConfig = {
   measurementId: "G-CHJDBK1C2S"
 };
 
+
+// Firebase başlat
 const app = initializeApp(firebaseConfig);
+
+// Firestore bağlantısı
 const db = getFirestore(app);
 
-window.firebaseDB = db;
+// Test için global erişim
+window.db = db;
 window.collection = collection;
 window.addDoc = addDoc;
+window.getDocs = getDocs;
+
+console.log("Firebase bağlandı");
+
 </script>
 </body>
 </html>
