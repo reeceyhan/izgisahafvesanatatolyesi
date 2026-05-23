@@ -845,13 +845,10 @@ async function saveProd(){
   var ok=await saveBooks();
 
 try {
-    const { collection, addDoc } = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js");
-
-    await addDoc(collection(window.firebaseDB, "books"), prod);
-
+    await window.addDoc(window.collection(window.firebaseDB, "books"), prod);
     console.log("Firebase kayıt başarılı");
 } catch (e) {
-    console.error("Firebase kayıt hatası:", e);
+    console.error('Firebase kayıt hatası:' e)
 }
 
   if(ok){
@@ -867,9 +864,13 @@ boot();
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getFirestore } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-// Senin Firebase config'in
+import {
+  getFirestore,
+  collection,
+  addDoc
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
 const firebaseConfig = {
   apiKey: "AIzaSyAbI_gr9pN6tHk7YFpzvU6C3AuqkTZawiM",
   authDomain: "izgisahafvesanatatolyesi-3ffde.firebaseapp.com",
@@ -880,16 +881,12 @@ const firebaseConfig = {
   measurementId: "G-CHJDBK1C2S"
 };
 
-// Firebase başlat
 const app = initializeApp(firebaseConfig);
-
-// Firestore bağlantısı
 const db = getFirestore(app);
 
-// Global erişim (çok önemli!)
 window.firebaseDB = db;
-
+window.collection = collection;
+window.addDoc = addDoc;
 </script>
-
 </body>
 </html>
