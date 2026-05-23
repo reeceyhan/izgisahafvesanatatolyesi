@@ -831,42 +831,64 @@ function renderPhotoPreview2(){
 }
 function rmPhoto2(idx){pendingPhotos2.splice(idx,1);renderPhotoPreview2();}
 async function saveProd(){
-  var kat=gv('p_kat')||'plak';
-  var prod={
-    id:genId(),ts:Date.now(),
-    kategori:kat,
-    ad:gv('p_ad'),yazar:gv('p_yazar'),yayinevi:'',yil:gv('p_yil'),
-    tur:gv('p_tur'),tur_custom:'',durum:gv('p_durum'),
-    konum:gv('p_konum'),adet:gv('p_adet'),fiyat:gv('p_fiyat'),
-    satildi:parseInt(gv('p_sat'))||0,not:gv('p_not'),
-    photos:pendingPhotos2.slice()
+  var kat = gv('p_kat') || 'plak';
+
+  var prod = {
+    id: genId(),
+    ts: Date.now(),
+    kategori: kat,
+    ad: gv('p_ad'),
+    yazar: gv('p_yazar'),
+    yayinevi: '',
+    yil: gv('p_yil'),
+    tur: gv('p_tur'),
+    tur_custom: '',
+    durum: gv('p_durum'),
+    konum: gv('p_konum'),
+    adet: gv('p_adet'),
+    fiyat: gv('p_fiyat'),
+    satildi: parseInt(gv('p_sat')) || 0,
+    not: gv('p_not'),
+    photos: pendingPhotos2.slice()
   };
+
   books.unshift(prod);
-  var ok=await saveBooks();
-  if(ok){
-    closeProdModal();updateStats();
+
+  var ok = await saveBooks();
+
+  try {
+    if (!window.firebaseDB || !window.collection || !window.addDoc) {
+      throw new Error("Firebase hazır değil");
+    }
+
+    await window.addDoc(window.collection(window.firebaseDB, "books"), prod);
+
+    console.log("Firebase kayıt başarılı");
+  } catch (e) {
+    console.error("Firebase kayıt hatası:", e);
+  }
+
+  if (ok) {
+    closeProdModal();
+    updateStats();
     setHpTab(kat);
-    showNotif('Ürün eklendi.','success');
-  } else showNotif('Kayıt başarısız.','error');
+    showNotif('Ürün eklendi.', 'success');
+  } else {
+    showNotif('Kayıt başarısız.', 'error');
+  }
 }
 
-boot();
-
 </script>
-<script type="module">
 
-// Firebase modülleri
+<script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 
 import {
   getFirestore,
   collection,
-  addDoc,
-  getDocs
+  addDoc
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-
-// Firebase ayarların
 const firebaseConfig = {
   apiKey: "AIzaSyAbI_gr9pN6tHk7YFpzvU6C3AuqkTZawiM",
   authDomain: "izgisahafvesanatatolyesi-3ffde.firebaseapp.com",
@@ -877,21 +899,18 @@ const firebaseConfig = {
   measurementId: "G-CHJDBK1C2S"
 };
 
-
-// Firebase başlat
 const app = initializeApp(firebaseConfig);
-
-// Firestore bağlantısı
 const db = getFirestore(app);
 
-// Test için global erişim
-window.db = db;
+window.firebaseDB = db;
 window.collection = collection;
 window.addDoc = addDoc;
-window.getDocs = getDocs;
 
-console.log("Firebase bağlandı");
-
+if (typeof boot === "function") {
+  boot();
+}
 </script>
+
 </body>
+</html></body>
 </html>
